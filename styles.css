@@ -467,20 +467,29 @@ footer {
 }
 .contact-card strong {
   font-size: 1.08em;
-  color: var(--dark-bg);
+  color: #101010; /* Contraste elevado */
+  letter-spacing: 0.02em;
 }
 .contact-card a, .contact-card span {
-  color: var(--dark-bg);
+  color: #23272F; /* Contraste elevado */
+  font-size: 1.038em;
   display: inline-block;
   margin-top: 2px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   transition: color 0.2s;
   word-break: break-all;
 }
 .contact-card a:hover, .contact-card a:focus {
   color: var(--yellow);
   text-decoration: underline;
+}
+[data-theme="dark"] .contact-card strong {
+  color: #fff;
+}
+[data-theme="dark"] .contact-card a, [data-theme="dark"] .contact-card span {
+  color: #fff;
 }
 .contact-extras {
   display: flex;
