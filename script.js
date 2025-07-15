@@ -1,29 +1,31 @@
-// Fade-in ao rolar
+// Fade-in suave usando IntersectionObserver
 document.addEventListener("DOMContentLoaded", function() {
   const fadeEls = document.querySelectorAll('.fadein');
-  function fadeInOnScroll() {
-    fadeEls.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if(rect.top < window.innerHeight - 60) {
-        el.classList.add('visible');
+  const observer = new window.IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
       }
     });
-  }
-  window.addEventListener("scroll", fadeInOnScroll);
-  fadeInOnScroll();
+  }, { threshold: 0.18 });
+
+  fadeEls.forEach(el => observer.observe(el));
 });
 
-// Destaca link da navbar conforme seção visível (scrollspy simples)
+// Scrollspy aprimorado
 document.addEventListener("DOMContentLoaded", function() {
   const sections = document.querySelectorAll("section[id]");
   const navLinks = document.querySelectorAll("header nav a");
   function onScroll() {
-    let scrollPos = window.scrollY + 120;
+    let scrollPos = window.scrollY + 130;
+    let found = false;
     sections.forEach(section => {
-      if(scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
+      if(!found && scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
         navLinks.forEach(link => {
           link.classList.toggle('active', link.getAttribute('href') === "#" + section.id);
         });
+        found = true;
       }
     });
   }
@@ -31,27 +33,18 @@ document.addEventListener("DOMContentLoaded", function() {
   onScroll();
 });
 
-// Dark/Light mode
+// Dark/Light mode aprimorado
 (function() {
   const themeToggle = document.getElementById('theme-toggle');
   const root = document.documentElement;
+  const body = document.body;
 
-  // Salva/recupera preferência do usuário
-  const storedTheme = localStorage.getItem('theme');
-  if (storedTheme) {
-    root.setAttribute('data-theme', storedTheme);
-    updateToggleIcon(storedTheme);
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    root.setAttribute('data-theme', 'dark');
-    updateToggleIcon('dark');
-  }
-
-  themeToggle.addEventListener('click', function() {
-    let theme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  function setTheme(theme) {
     root.setAttribute('data-theme', theme);
+    body.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('theme', theme);
     updateToggleIcon(theme);
-  });
+  }
 
   function updateToggleIcon(theme) {
     themeToggle.innerHTML =
@@ -59,4 +52,30 @@ document.addEventListener("DOMContentLoaded", function() {
         ? '<i class="fas fa-sun"></i>'
         : '<i class="fas fa-moon"></i>';
   }
+
+  // Preferência do usuário
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme) {
+    setTheme(storedTheme);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+  } else {
+    setTheme('light');
+  }
+
+  themeToggle.addEventListener('click', function() {
+    const theme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    setTheme(theme);
+  });
 })();
+
+// Botão voltar ao topo
+document.addEventListener("DOMContentLoaded", function() {
+  const btn = document.getElementById('back-to-top');
+  window.addEventListener('scroll', function() {
+    btn.style.display = window.scrollY > 350 ? 'flex' : 'none';
+  });
+  btn.addEventListener('click', function() {
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
